@@ -1,0 +1,36 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Client {
+  id           String      @id @default(uuid())
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  suspended    Boolean     @default(false)
+  name         String      @unique
+  url          String      @unique
+  logo         String
+  email        String      @unique
+  passwordHash String
+  keys         ClientKey[]
+}
+
+model ClientKey {
+  id           String    @id @default(uuid())
+  client       Client    @relation(fields: [clientId], references: [id])
+  clientId     String
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  revoked      Boolean   @default(false)
+  keyType      String
+  keyAlgorithm String
+  curve        String
+  publicKey    String
+  expiry       DateTime?
+  notBefore    DateTime  @default(now())
+}
